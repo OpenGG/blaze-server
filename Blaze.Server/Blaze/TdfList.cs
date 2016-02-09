@@ -1,28 +1,35 @@
-﻿using System;
+﻿// -----------------------------------------------------------
+// This program is private software, based on C# source code.
+// To sell or change credits of this software is forbidden,
+// except if someone approves it from the Blaze INC. team.
+// -----------------------------------------------------------
+// Copyrights (c) 2016 Blaze.Server INC. All rights reserved.
+// -----------------------------------------------------------
+
+#region
+
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Blaze.Server
+#endregion
+
+namespace Blaze.Server.Blaze
 {
-    public class TdfList : Tdf
+    internal sealed class TdfList : Tdf
     {
-        public TdfBaseType ListType;
-        public ArrayList List;
+        public readonly ArrayList List;
+        public readonly TdfBaseType ListType;
 
-        public bool Stub;
+        public readonly bool Stub;
 
         public TdfList(string label, TdfBaseType listType, ArrayList list, bool stub = false)
         {
-            this.Label = label;
-            this.Type = TdfBaseType.List;
+            Label = label;
+            Type = TdfBaseType.List;
 
-            this.ListType = listType;
-            this.List = list;
+            ListType = listType;
+            List = list;
 
-            this.Stub = stub;
+            Stub = stub;
         }
     }
 }

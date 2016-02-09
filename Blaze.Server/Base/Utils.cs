@@ -1,22 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// -----------------------------------------------------------
+// This program is private software, based on C# source code.
+// To sell or change credits of this software is forbidden,
+// except if someone approves it from the Blaze INC. team.
+// -----------------------------------------------------------
+// Copyrights (c) 2016 Blaze.Server INC. All rights reserved.
+// -----------------------------------------------------------
 
-namespace Blaze.Server
+#region
+
+using System;
+
+#endregion
+
+namespace Blaze.Server.Base
 {
-    class Utils
+    internal static class Utils
     {
-        public static ulong GetUnixTime()
-        {
-            return (ulong)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalMilliseconds;
-        }
+        public static ulong GetUnixTime() => (ulong) DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
 
-        public static uint SwapBytes(uint word)
-        {
-            // convert big endian to little endian
-            return ((word >> 24) & 0x000000FF) | ((word >> 8) & 0x0000FF00) | ((word << 8) & 0x00FF0000) | ((word << 24) & 0xFF000000);
-        }
+        public static uint SwapBytes(uint word) => ((word >> 24) & 0x000000FF) | ((word >> 8) & 0x0000FF00) | ((word << 8) & 0x00FF0000) |
+                                                   ((word << 24) & 0xFF000000);
     }
 }

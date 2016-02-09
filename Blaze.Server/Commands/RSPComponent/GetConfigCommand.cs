@@ -1,16 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// -----------------------------------------------------------
+// This program is private software, based on C# source code.
+// To sell or change credits of this software is forbidden,
+// except if someone approves it from the Blaze INC. team.
+// -----------------------------------------------------------
+// Copyrights (c) 2016 Blaze.Server INC. All rights reserved.
+// -----------------------------------------------------------
 
-namespace Blaze.Server
+#region
+
+using Blaze.Server.Base;
+using Blaze.Server.Logging;
+
+#endregion
+
+namespace Blaze.Server.Commands.RSPComponent
 {
-    class GetConfigCommand
+    internal static class GetConfigCommand
     {
         public static void HandleRequest(Request request)
         {
-            Log.Info(string.Format("Client {0} requested RSP configuration", request.Client.ID));
+            Log.Info($"Client {request.Client.ID} requested RSP configuration");
 
             foreach (var tdf in request.Data)
             {

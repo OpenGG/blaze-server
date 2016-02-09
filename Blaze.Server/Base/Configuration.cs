@@ -1,17 +1,28 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿// -----------------------------------------------------------
+// This program is private software, based on C# source code.
+// To sell or change credits of this software is forbidden,
+// except if someone approves it from the Blaze INC. team.
+// -----------------------------------------------------------
+// Copyrights (c) 2016 Blaze.Server INC. All rights reserved.
+// -----------------------------------------------------------
 
-using YamlDotNet.RepresentationModel;
+#region
+
+using System.Collections.Generic;
+using System.IO;
 using YamlDotNet.Serialization;
 
-namespace Blaze.Server
+#endregion
+
+// ReSharper disable MemberHidesStaticFromOuterClass
+// ReSharper disable UnusedAutoPropertyAccessor.Local
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+
+namespace Blaze.Server.Base
 {
-    public class Configuration
+    internal static class Configuration
     {
-        public struct Config
-        {
-            public List<User> Users { get; set; }
-        }
+        public static List<User> Users { get; private set; }
 
         public static void Load(string filename)
         {
@@ -23,10 +34,14 @@ namespace Blaze.Server
             Users = config.Users;
         }
 
-        public static List<User> Users { get; set; }
+        private struct Config
+        {
+            public List<User> Users { get; set; }
+        }
     }
 
-    public class User
+    // ReSharper disable once ClassNeverInstantiated.Global
+    internal class User
     {
         public ulong ID { get; set; }
 

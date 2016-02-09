@@ -1,35 +1,43 @@
-﻿using System;
+﻿// -----------------------------------------------------------
+// This program is private software, based on C# source code.
+// To sell or change credits of this software is forbidden,
+// except if someone approves it from the Blaze INC. team.
+// -----------------------------------------------------------
+// Copyrights (c) 2016 Blaze.Server INC. All rights reserved.
+// -----------------------------------------------------------
+
+#region
+
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Blaze.Server.Blaze;
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable UnusedMember.Global
 
-namespace Blaze.Server
+#endregion
+
+namespace Blaze.Server.Base
 {
-    public class Request
+    public sealed class Request
     {
-        public Client Client { get; set; }
-
-        public Component ComponentID { get; set; }
-
-        public int CommandID { get; set; }
-
-        public int ErrorCode { get; set; }
-
-        public MessageType MessageType { get; set; }
-
-        public int MessageID { get; set; }
-
-        public Dictionary<string, Tdf> Data { get; set; }
-
-        public Request(Client client)
+        internal Request(Client client)
         {
             Client = client;
         }
 
-        public void Reply(int errorCode = 0, List<Tdf> data = null)
-        {
-            Client.Reply(this, errorCode, data);
-        }
+        internal Client Client { get; }
+
+        internal Component ComponentID { get; set; }
+
+        internal int CommandID { get; set; }
+
+        internal int ErrorCode { get; set; }
+
+        internal MessageType MessageType { get; set; }
+
+        internal int MessageID { get; set; }
+
+        internal Dictionary<string, Tdf> Data { get; set; }
+
+        internal void Reply(int errorCode = 0, List<Tdf> data = null) => Client.Reply(this, errorCode, data);
     }
 }

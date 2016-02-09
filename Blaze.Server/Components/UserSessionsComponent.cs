@@ -1,12 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// -----------------------------------------------------------
+// This program is private software, based on C# source code.
+// To sell or change credits of this software is forbidden,
+// except if someone approves it from the Blaze INC. team.
+// -----------------------------------------------------------
+// Copyrights (c) 2016 Blaze.Server INC. All rights reserved.
+// -----------------------------------------------------------
 
-namespace Blaze.Server
+#region
+
+using Blaze.Server.Base;
+using Blaze.Server.Commands.UserSessionsComponent;
+using Blaze.Server.Logging;
+
+#endregion
+
+namespace Blaze.Server.Components
 {
-    class UserSessionsComponent
+    internal static class UserSessionsComponent
     {
         public static void HandleRequest(Request request)
         {
@@ -17,7 +27,7 @@ namespace Blaze.Server
                     break;
 
                 default:
-                    Log.Warn(string.Format("Unhandled request: {0} {1}", request.ComponentID, request.CommandID));
+                    Log.Warn($"Unhandled request: {request.ComponentID} {request.CommandID}");
                     break;
             }
         }

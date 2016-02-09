@@ -1,23 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// -----------------------------------------------------------
+// This program is private software, based on C# source code.
+// To sell or change credits of this software is forbidden,
+// except if someone approves it from the Blaze INC. team.
+// -----------------------------------------------------------
+// Copyrights (c) 2016 Blaze.Server INC. All rights reserved.
+// -----------------------------------------------------------
 
-namespace Blaze.Server
+namespace Blaze.Server.Blaze
 {
-    public class TdfVector2 : Tdf
+    internal sealed class TdfVector2 : Tdf
     {
-        public ulong Value1;
-        public ulong Value2;
+        public readonly ulong Value1;
+        public readonly ulong Value2;
 
         public TdfVector2(string label, ulong value1, ulong value2)
         {
-            this.Label = label;
-            this.Type = TdfBaseType.TDF_TYPE_BLAZE_OBJECT_TYPE;
+            Label = label;
+            Type = TdfBaseType.TDF_TYPE_BLAZE_OBJECT_TYPE;
 
-            this.Value1 = value1;
-            this.Value2 = value2;
+            Value1 = value1;
+            Value2 = value2;
         }
     }
 }

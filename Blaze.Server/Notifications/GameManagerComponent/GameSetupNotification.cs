@@ -1,17 +1,27 @@
-﻿using System;
+﻿// -----------------------------------------------------------
+// This program is private software, based on C# source code.
+// To sell or change credits of this software is forbidden,
+// except if someone approves it from the Blaze INC. team.
+// -----------------------------------------------------------
+// Copyrights (c) 2016 Blaze.Server INC. All rights reserved.
+// -----------------------------------------------------------
+
+#region
+
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Blaze.Server.Base;
+using Blaze.Server.Blaze;
 
-namespace Blaze.Server
+#endregion
+
+namespace Blaze.Server.Notifications.GameManagerComponent
 {
-    class GameSetupNotification
+    internal static class GameSetupNotification
     {
         public static void Notify(Client client)
         {
-            var game = GameManager.Games[client.GameID];
+            var game = GameManager.GameManager.Games[client.GameID];
 
             var data = new List<Tdf>
             {
@@ -28,7 +38,7 @@ namespace Blaze.Server
                     new TdfInteger("GPVH", 666),
                     //new TdfInteger("GSET", game.gset), TODO
                     new TdfInteger("GSID", 1),
-                    new TdfInteger("GSTA", (ulong)game.State),
+                    new TdfInteger("GSTA", (ulong) game.State),
                     new TdfString("GTYP", "frostbite_multiplayer"),
                     new TdfList("HNET", TdfBaseType.Struct, new ArrayList
                     {
@@ -49,18 +59,18 @@ namespace Blaze.Server
                     new TdfInteger("HSES", 13666),
                     new TdfInteger("MCAP", game.MaxPlayers),
                     new TdfInteger("NRES", game.NotResetable),
-                    new TdfInteger("NTOP", (ulong)game.NetworkTopology),
+                    new TdfInteger("NTOP", (ulong) game.NetworkTopology),
                     new TdfString("PGID", "b6852db1-ba37-4b40-aea3-0bd16efba4f9"),
-                    new TdfBlob("PGSR", new byte[] { }),
+                    new TdfBlob("PGSR", new byte[] {}),
                     new TdfStruct("PHST", new List<Tdf>
                     {
                         new TdfInteger("HPID", client.User.ID),
                         new TdfInteger("HSLT", 1)
                     }),
-                    new TdfInteger("PRES", (ulong)game.PresenceMode),
+                    new TdfInteger("PRES", (ulong) game.PresenceMode),
                     new TdfString("PSAS", "ams"),
-                    new TdfInteger("QCAP", (ulong)game.QueueCapacity),
-                    new TdfUnion("REAS", NetworkAddressMember.XboxClientAddress, new List<Tdf> { }),
+                    new TdfInteger("QCAP", game.QueueCapacity),
+                    new TdfUnion("REAS", NetworkAddressMember.XboxClientAddress, new List<Tdf>()),
                     new TdfStruct("VALU", new List<Tdf>
                     {
                         new TdfInteger("DCTX", 0)
@@ -73,7 +83,7 @@ namespace Blaze.Server
                         new TdfInteger("HSLT", 0)
                     }),
                     new TdfString("UUID", "714b05dc-93bc-49ac-961c-cb38b574f30a"),
-                    new TdfInteger("VOIP", (ulong)game.VoipTopology),
+                    new TdfInteger("VOIP", (ulong) game.VoipTopology),
                     new TdfString("VSTR", "67")
                 })
             };

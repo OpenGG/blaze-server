@@ -1,21 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// -----------------------------------------------------------
+// This program is private software, based on C# source code.
+// To sell or change credits of this software is forbidden,
+// except if someone approves it from the Blaze INC. team.
+// -----------------------------------------------------------
+// Copyrights (c) 2016 Blaze.Server INC. All rights reserved.
+// -----------------------------------------------------------
 
-namespace Blaze.Server
+#region
+
+using System.Collections.Generic;
+
+#endregion
+
+namespace Blaze.Server.Blaze
 {
-    public class TdfStruct : Tdf
+    internal sealed class TdfStruct : Tdf
     {
-        public List<Tdf> Data;
+        public readonly List<Tdf> Data;
 
         public TdfStruct(string label, List<Tdf> data)
         {
-            this.Label = label;
-            this.Type = TdfBaseType.Struct;
+            Label = label;
+            Type = TdfBaseType.Struct;
 
-            this.Data = data;
+            Data = data;
         }
     }
 }

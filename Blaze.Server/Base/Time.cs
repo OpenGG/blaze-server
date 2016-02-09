@@ -1,27 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// -----------------------------------------------------------
+// This program is private software, based on C# source code.
+// To sell or change credits of this software is forbidden,
+// except if someone approves it from the Blaze INC. team.
+// -----------------------------------------------------------
+// Copyrights (c) 2016 Blaze.Server INC. All rights reserved.
+// -----------------------------------------------------------
 
-namespace Blaze.Server
+#region
+
+using System.Diagnostics;
+
+#endregion
+
+namespace Blaze.Server.Base
 {
-    public static class Time
+    internal static class Time
     {
         private static long _initialCount;
+
+        public static long CurrentTime => (Stopwatch.GetTimestamp() - _initialCount)/(Stopwatch.Frequency/1000);
 
         public static void Initialize()
         {
             _initialCount = Stopwatch.GetTimestamp();
-        }
-
-        public static long CurrentTime
-        {
-            get
-            {
-                return (Stopwatch.GetTimestamp() - _initialCount) / (Stopwatch.Frequency / 1000);
-            }
         }
     }
 }

@@ -1,35 +1,47 @@
-﻿using System;
+﻿// -----------------------------------------------------------
+// This program is private software, based on C# source code.
+// To sell or change credits of this software is forbidden,
+// except if someone approves it from the Blaze INC. team.
+// -----------------------------------------------------------
+// Copyrights (c) 2016 Blaze.Server INC. All rights reserved.
+// -----------------------------------------------------------
+
+#region
+
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Blaze.Server.Base;
+using Blaze.Server.Blaze;
+using Blaze.Server.Logging;
 
-namespace Blaze.Server
+#endregion
+
+namespace Blaze.Server.Commands.UtilComponent
 {
-    class PreAuthCommand
+    internal static class PreAuthCommand
     {
         public static void HandleRequest(Request request)
         {
-            Log.Info(string.Format("Client {0} pre-authenticating", request.Client.ID));
+            Log.Info($"Client {request.Client.ID} pre-authenticating");
 
-            var clientData = (TdfStruct)request.Data["CDAT"];
-            var clientType = (TdfInteger)clientData.Data.Find(tdf => tdf.Label == "TYPE");
-            var clientService = (TdfString)clientData.Data.Find(tdf => tdf.Label == "SVCN");
+            var clientData = (TdfStruct) request.Data["CDAT"];
+            var clientType = (TdfInteger) clientData.Data.Find(tdf => tdf.Label == "TYPE");
+            var clientService = (TdfString) clientData.Data.Find(tdf => tdf.Label == "SVCN");
 
-            var clientInfo = (TdfStruct)request.Data["CINF"];
-            var clientLocalization = (TdfInteger)clientInfo.Data.Find(tdf => tdf.Label == "LOC");
+            var clientInfo = (TdfStruct) request.Data["CINF"];
+            var clientLocalization = (TdfInteger) clientInfo.Data.Find(tdf => tdf.Label == "LOC");
 
-            request.Client.Type = (ClientType)clientType.Value;
-            request.Client.Localization = (ulong)clientLocalization.Value;
+            request.Client.Type = (ClientType) clientType.Value;
+            request.Client.Localization = clientLocalization.Value;
             request.Client.Service = clientService.Value;
 
             // TODO: fix this
-            var cids = new TdfList("CIDS", TdfBaseType.Integer, new ArrayList
-            {
+            var cids = new TdfList("CIDS", TdfBaseType.Integer, new ArrayList());
                 //1, 25, 4, 27, 28, 6, 7, 9, 10, 11, 30720, 30721, 30722, 30723, 20, 30725, 30726, 2000
-            });
-            cids.List.AddRange((new ulong[] { 1, 25, 4, 27, 28, 6, 7, 9, 10, 11, 30720, 30721, 30722, 30723, 20, 30725, 30726, 2000 }).ToArray());
+            cids.List.AddRange(
+                new ulong[] {1, 25, 4, 27, 28, 6, 7, 9, 10, 11, 30720, 30721, 30722, 30723, 20, 30725, 30726, 2000}
+                    .ToArray());
 
             var data = new List<Tdf>
             {
@@ -41,11 +53,11 @@ namespace Blaze.Server
                 {
                     new TdfMap("CONF", TdfBaseType.String, TdfBaseType.String, new Dictionary<object, object>
                     {
-                        { "connIdleTimeout", "90s" },
-                        { "defaultRequestTimeout", "80s" },
-                        { "pingPeriod", "20s" },
-                        { "voipHeadsetUpdateRate", "1000" },
-                        { "xlspConnectionIdleTimeout", "300" }
+                        {"connIdleTimeout", "90s"},
+                        {"defaultRequestTimeout", "80s"},
+                        {"pingPeriod", "20s"},
+                        {"voipHeadsetUpdateRate", "1000"},
+                        {"xlspConnectionIdleTimeout", "300"}
                     })
                 }),
                 new TdfString("INST", request.Client.Service),
@@ -65,7 +77,8 @@ namespace Blaze.Server
                     new TdfInteger("LNP", 10),
                     new TdfMap("LTPS", TdfBaseType.String, TdfBaseType.Struct, new Dictionary<object, object>
                     {
-                        { "ams", new List<Tdf>
+                        {
+                            "ams", new List<Tdf>
                             {
                                 new TdfString("PSA", "127.0.0.1"),
                                 new TdfInteger("PSP", 17502),

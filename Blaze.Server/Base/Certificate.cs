@@ -1,16 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
+﻿// -----------------------------------------------------------
+// This program is private software, based on C# source code.
+// To sell or change credits of this software is forbidden,
+// except if someone approves it from the LeafyCoding INC. team.
+// -----------------------------------------------------------
+// Copyrights (c) 2016 Blaze.Server INC. All rights reserved.
+// -----------------------------------------------------------
 
-namespace Blaze.Server
+#region
+
+using System.Security.Cryptography.X509Certificates;
+
+#endregion
+
+namespace Blaze.Server.Base
 {
-    class Certificate
+    internal static class Certificate
     {
         // gosredirector.ea.com.pfx
-        private static byte[] blazeHubServerCertificate =
+        private static readonly byte[] blazeHubServerCertificate =
         {
             0x30, 0x82, 0x06, 0xFA, 0x02, 0x01, 0x03, 0x30, 0x82, 0x06, 0xB6, 0x06,
             0x09, 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x07, 0x01, 0xA0, 0x82,
@@ -165,7 +172,7 @@ namespace Blaze.Server
         };
 
         // 373244-gosprapp357.ea.com.pfx
-        private static byte[] blazeServerCertificate =
+        private static readonly byte[] blazeServerCertificate =
         {
             0x30, 0x82, 0x07, 0x02, 0x02, 0x01, 0x03, 0x30, 0x82, 0x06, 0xBE, 0x06,
             0x09, 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x07, 0x01, 0xA0, 0x82,
@@ -319,8 +326,8 @@ namespace Blaze.Server
             0xAF, 0x68, 0xC4, 0x24, 0x25, 0xC5, 0x02, 0x02, 0x07, 0xD0
         };
 
-        public static X509Certificate2 BlazeHubServer;
-        public static X509Certificate2 BlazeServer;
+        public static readonly X509Certificate2 BlazeHubServer;
+        public static readonly X509Certificate2 BlazeServer;
 
         static Certificate()
         {

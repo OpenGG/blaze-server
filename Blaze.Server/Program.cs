@@ -1,17 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// -----------------------------------------------------------
+// This program is private software, based on C# source code.
+// To sell or change credits of this software is forbidden,
+// except if someone approves it from the Blaze INC. team.
+// -----------------------------------------------------------
+// Copyrights (c) 2016 Blaze.Server INC. All rights reserved.
+// -----------------------------------------------------------
+
+#region
+
+using System;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
+using Blaze.Server.Base;
+using Blaze.Server.Logging;
+
+#endregion
 
 namespace Blaze.Server
 {
-    class Program
+    internal static class Program
     {
-        static void Main(string[] args)
+        private static void Main()
         {
+            Console.Title = "Blaze.Server";
+
             Log.Initialize("Blaze.Server.log");
             Log.Info("Starting Blaze.Server...");
 
@@ -29,7 +41,7 @@ namespace Blaze.Server
             }
             catch (IOException)
             {
-                Log.Error(string.Format("Could not open the configuration file {0}.", "Blaze.Server.yml"));
+                Log.Error($"Could not open the configuration file {"Blaze.Server.yml"}.");
                 return;
             }
 

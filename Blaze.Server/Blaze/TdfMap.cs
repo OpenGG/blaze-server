@@ -1,27 +1,35 @@
-﻿using System;
+﻿// -----------------------------------------------------------
+// This program is private software, based on C# source code.
+// To sell or change credits of this software is forbidden,
+// except if someone approves it from the Blaze INC. team.
+// -----------------------------------------------------------
+// Copyrights (c) 2016 Blaze.Server INC. All rights reserved.
+// -----------------------------------------------------------
+
+#region
+
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Blaze.Server
+#endregion
+
+namespace Blaze.Server.Blaze
 {
-    public class TdfMap : Tdf
+    internal sealed class TdfMap : Tdf
     {
-        public TdfBaseType KeyType;
-        public TdfBaseType ValueType;
+        public readonly TdfBaseType KeyType;
 
-        public Dictionary<object, object> Map;
+        public readonly Dictionary<object, object> Map;
+        public readonly TdfBaseType ValueType;
 
         public TdfMap(string label, TdfBaseType keyType, TdfBaseType valueType, Dictionary<object, object> map)
         {
-            this.Label = label;
-            this.Type = TdfBaseType.Map;
+            Label = label;
+            Type = TdfBaseType.Map;
 
-            this.KeyType = keyType;
-            this.ValueType = valueType;
+            KeyType = keyType;
+            ValueType = valueType;
 
-            this.Map = map;
+            Map = map;
         }
     }
 }

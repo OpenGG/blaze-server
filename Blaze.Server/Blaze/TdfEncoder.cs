@@ -1,17 +1,32 @@
-﻿using System;
+﻿// -----------------------------------------------------------
+// This program is private software, based on C# source code.
+// To sell or change credits of this software is forbidden,
+// except if someone approves it from the Blaze INC. team.
+// -----------------------------------------------------------
+// Copyrights (c) 2016 Blaze.Server INC. All rights reserved.
+// -----------------------------------------------------------
+
+#region
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using Blaze.Server.Base;
+using Blaze.Server.Logging;
+// ReSharper disable UnusedMember.Global
+// ReSharper disable UnusedMember.Local
 
-namespace Blaze.Server
+#endregion
+
+namespace Blaze.Server.Blaze
 {
-    public class TdfEncoder
+    internal sealed class TdfEncoder
     {
-        private MemoryStream _stream;
-        private List<Tdf> _data;
+        private readonly List<Tdf> _data;
+        private readonly MemoryStream _stream;
 
         public TdfEncoder()
         {
@@ -25,25 +40,25 @@ namespace Blaze.Server
         }
 
         /// <summary>
-        /// Encodes a label to tag.
+        ///     Encodes a label to tag.
         /// </summary>
         /// <param name="label">Label to write.</param>
         private void WriteLabel(string label)
         {
             // by Pedro Martins
-            int tag = 0;
+            var tag = 0;
 
-            for (int i = 0; i < label.Length; i++)
+            for (var i = 0; i < label.Length; i++)
             {
-                tag |= (0x20 | (label[i] & 0x1F)) << (3 - i) * 6;
+                tag |= (0x20 | (label[i] & 0x1F)) << (3 - i)*6;
             }
 
-            uint sTag = Utils.SwapBytes(Convert.ToUInt32(tag)) >> 8;
+            var sTag = Utils.SwapBytes(Convert.ToUInt32(tag)) >> 8;
 
             // hackhackhack
             // FIXME
-            MemoryStream hehStream = new MemoryStream();
-            BinaryWriter hehWriter = new BinaryWriter(hehStream);
+            var hehStream = new MemoryStream();
+            var hehWriter = new BinaryWriter(hehStream);
             hehWriter.Write(sTag);
 
             _stream.Write(hehStream.GetBuffer().Take(3).ToArray(), 0, 3);
@@ -53,47 +68,47 @@ namespace Blaze.Server
         {
             if (value < 0x40)
             {
-                _stream.WriteByte((byte)(value & 0xFF));
+                _stream.WriteByte((byte) (value & 0xFF));
             }
             else
             {
-                _stream.WriteByte((byte)((value & 0x3F) | 0x80));
-                ulong currshift = value >> 6;
+                _stream.WriteByte((byte) ((value & 0x3F) | 0x80));
+                var currshift = value >> 6;
 
                 while (currshift >= 0x80)
                 {
-                    _stream.WriteByte((byte)((currshift & 0x7F) | 0x80));
+                    _stream.WriteByte((byte) ((currshift & 0x7F) | 0x80));
                     currshift >>= 7;
                 }
 
-                _stream.WriteByte((byte)currshift);
+                _stream.WriteByte((byte) currshift);
             }
         }
 
         private void WriteString(string value)
         {
-            byte[] stringBytes = Encoding.ASCII.GetBytes(value);
-            uint length = (uint)value.Length;
+            var stringBytes = Encoding.ASCII.GetBytes(value);
+            var length = (uint) value.Length;
 
             // write string length
             WriteInteger(length + 1);
 
             // write string
-            _stream.Write(stringBytes, 0, (int)length);
+            _stream.Write(stringBytes, 0, (int) length);
 
             // write end byte
             _stream.WriteByte(0);
         }
 
-        private void WriteBlob(byte[] data)
+        private void WriteBlob(IReadOnlyList<byte> data)
         {
-            uint length = (uint)data.Length;
+            var length = (uint) data.Count;
 
             // write lenght
             WriteInteger(length);
 
             // write data
-            for (int i = 0; i < length; i++)
+            for (var i = 0; i < length; i++)
             {
                 _stream.WriteByte(data[i]);
             }
@@ -102,63 +117,52 @@ namespace Blaze.Server
         private void WriteStruct(List<Tdf> data)
         {
             // write struct items
-            data.ForEach(delegate (Tdf item)
-            {
-                WriteTdf(item);
-            });
+            data.ForEach(WriteTdf);
 
             // write end byte
             _stream.WriteByte(0);
         }
 
-        private void WriteList(TdfBaseType type, ArrayList list)
+        private void WriteList(TdfBaseType type, IEnumerable list)
         {
-            foreach (Object obj in list)
+            foreach (var obj in list)
             {
                 switch (type)
                 {
                     case TdfBaseType.Integer:
-                        WriteInteger((ulong)obj);
+                        WriteInteger((ulong) obj);
                         break;
 
                     case TdfBaseType.String:
-                        WriteString((string)obj);
+                        WriteString((string) obj);
                         break;
 
                     case TdfBaseType.Struct:
-                        WriteStruct((List<Tdf>)obj);
+                        WriteStruct((List<Tdf>) obj);
                         break;
 
                     case TdfBaseType.TDF_TYPE_BLAZE_OBJECT_ID:
-                        WriteTdfVector3((TdfVector3)obj);
+                        WriteTdfVector3((TdfVector3) obj);
                         break;
 
                     default:
-                        Log.Warn(string.Format("Unknown list type: {0}.", type));
+                        Log.Warn($"Unknown list type: {type}.");
                         break;
                 }
             }
         }
 
-        private void WriteTdfMin(TdfMin tdf)
-        {
-            // write value
-            _stream.WriteByte((byte)tdf.Value);
-        }
+        private void WriteTdfMin(TdfMin tdf) => _stream.WriteByte((byte) tdf.Value);
 
-        private void WriteTdfInteger(TdfInteger tdf)
-        {
-            // write value
-            WriteInteger((ulong)tdf.Value);
-        }
+        private void WriteTdfInteger(TdfInteger tdf) => WriteInteger(tdf.Value);
 
         private void WriteTdfList(TdfList tdf)
         {
             // write list type
-            _stream.WriteByte((byte)tdf.ListType);
+            _stream.WriteByte((byte) tdf.ListType);
 
             // write list size
-            _stream.WriteByte((byte)tdf.List.Count);
+            _stream.WriteByte((byte) tdf.List.Count);
 
             if (tdf.Stub)
             {
@@ -172,31 +176,31 @@ namespace Blaze.Server
         private void WriteTdfMap(TdfMap tdf)
         {
             // write list types
-            _stream.WriteByte((byte)tdf.KeyType);
-            _stream.WriteByte((byte)tdf.ValueType);
+            _stream.WriteByte((byte) tdf.KeyType);
+            _stream.WriteByte((byte) tdf.ValueType);
 
             // write list size
-            _stream.WriteByte((byte)tdf.Map.Count);
+            _stream.WriteByte((byte) tdf.Map.Count);
 
             // write map
-            Action<TdfBaseType, Object> writeListItem = (type, item) =>
+            Action<TdfBaseType, object> writeListItem = (type, item) =>
             {
                 switch (type)
                 {
                     case TdfBaseType.Integer:
-                        WriteInteger((ulong)item);
+                        WriteInteger((ulong) item);
                         break;
 
                     case TdfBaseType.String:
-                        WriteString((string)item);
+                        WriteString((string) item);
                         break;
 
                     case TdfBaseType.Struct:
-                        WriteStruct((List<Tdf>)item);
+                        WriteStruct((List<Tdf>) item);
                         break;
 
                     default:
-                        Log.Warn(string.Format("Unknown list item type: {0}", type));
+                        Log.Warn($"Unknown list item type: {type}");
                         break;
                 }
             };
@@ -211,24 +215,21 @@ namespace Blaze.Server
         private void WriteTdfUnion(TdfUnion tdf)
         {
             // write active member
-            _stream.WriteByte((byte)tdf.activeMember);
+            _stream.WriteByte((byte) tdf.activeMember);
 
             if (tdf.activeMember != NetworkAddressMember.Unset)
             {
-                tdf.Data.ForEach(delegate (Tdf item)
-                {
-                    WriteTdf(item);
-                });
+                tdf.Data.ForEach(WriteTdf);
             }
         }
 
         private void WriteTdfIntegerList(TdfIntegerList tdf)
         {
             // write list size
-            _stream.WriteByte((byte)tdf.list.Count);
+            _stream.WriteByte((byte) tdf.list.Count);
 
             // write list
-            foreach (ulong l in tdf.list)
+            foreach (var l in tdf.list)
             {
                 WriteInteger(l);
             }
@@ -253,70 +254,64 @@ namespace Blaze.Server
             WriteLabel(tdf.Label);
 
             // write type
-            _stream.WriteByte((byte)tdf.Type);
+            _stream.WriteByte((byte) tdf.Type);
 
             switch (tdf.Type)
             {
                 case TdfBaseType.Integer:
-                    WriteTdfInteger((TdfInteger)tdf);
+                    WriteTdfInteger((TdfInteger) tdf);
                     break;
 
                 case TdfBaseType.String:
-                    WriteString(((TdfString)tdf).Value);
+                    WriteString(((TdfString) tdf).Value);
                     break;
 
                 case TdfBaseType.Binary:
-                    WriteBlob(((TdfBlob)tdf).Data);
+                    WriteBlob(((TdfBlob) tdf).Data);
                     break;
 
                 case TdfBaseType.Struct:
-                    WriteStruct(((TdfStruct)tdf).Data);
+                    WriteStruct(((TdfStruct) tdf).Data);
                     break;
 
                 case TdfBaseType.List:
-                    WriteTdfList((TdfList)tdf);
+                    WriteTdfList((TdfList) tdf);
                     break;
 
                 case TdfBaseType.Map:
-                    WriteTdfMap((TdfMap)tdf);
+                    WriteTdfMap((TdfMap) tdf);
                     break;
 
                 case TdfBaseType.Union:
-                    WriteTdfUnion((TdfUnion)tdf);
+                    WriteTdfUnion((TdfUnion) tdf);
                     break;
 
                 case TdfBaseType.Variable:
-                    WriteTdfIntegerList((TdfIntegerList)tdf);
+                    WriteTdfIntegerList((TdfIntegerList) tdf);
                     break;
 
                 case TdfBaseType.TDF_TYPE_BLAZE_OBJECT_TYPE:
-                    WriteTdfVector2((TdfVector2)tdf);
+                    WriteTdfVector2((TdfVector2) tdf);
                     break;
 
                 case TdfBaseType.TDF_TYPE_BLAZE_OBJECT_ID:
-                    WriteTdfVector3((TdfVector3)tdf);
+                    WriteTdfVector3((TdfVector3) tdf);
                     break;
 
                 default:
-                    Log.Warn(string.Format("Unknown Tdf type: {0}", tdf.Type));
+                    Log.Warn($"Unknown Tdf type: {tdf.Type}");
                     break;
             }
         }
 
-        public void WriteTdf(List<Tdf> tdfs)
-        {
-            tdfs.ForEach(delegate (Tdf tdf)
-            {
-                WriteTdf(tdf);
-            });
-        }
+        private void WriteTdf(List<Tdf> tdfs) => tdfs.ForEach(WriteTdf);
 
         public byte[] Encode()
         {
             if (_data != null) WriteTdf(_data);
 
-            byte[] buffer = _stream.GetBuffer();
-            int position = (int)_stream.Position;
+            var buffer = _stream.GetBuffer();
+            var position = (int) _stream.Position;
 
             return buffer.Take(position).ToArray();
         }

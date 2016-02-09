@@ -1,24 +1,33 @@
-﻿using System;
+﻿// -----------------------------------------------------------
+// This program is private software, based on C# source code.
+// To sell or change credits of this software is forbidden,
+// except if someone approves it from the Blaze INC. team.
+// -----------------------------------------------------------
+// Copyrights (c) 2016 Blaze.Server INC. All rights reserved.
+// -----------------------------------------------------------
+
+#region
+
+using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
+using Blaze.Server.Base;
+using Blaze.Server.Logging;
+
+#endregion
 
 namespace Blaze.Server
 {
-    class BlazeHubServer
+    internal static class BlazeHubServer
     {
-        private static Socket _socket;
+        private static readonly Socket _socket;
 
         private static long _clientID;
 
-        public static Dictionary<long, Client> Clients;
+        private static readonly Dictionary<long, Client> Clients;
 
         static BlazeHubServer()
         {
@@ -40,24 +49,27 @@ namespace Blaze.Server
 
         private static void AcceptCallback(IAsyncResult ar)
         {
-            var socket = (Socket)ar.AsyncState;
+            var socket = (Socket) ar.AsyncState;
 
             try
             {
-                var clientSocket = (Socket)socket.EndAccept(ar);
+                var clientSocket = socket.EndAccept(ar);
 
-                Log.Info($"Client connected from {clientSocket.RemoteEndPoint.ToString()}");
+                Log.Info($"Client connected from {clientSocket.RemoteEndPoint}");
 
-                var client = new Client();
+                var client = new Client
+                {
+                    ID = Interlocked.Increment(ref _clientID),
+                    Socket = clientSocket,
+                    Stream = new SslStream(new NetworkStream(clientSocket)),
+                    EndPoint = (IPEndPoint) clientSocket.RemoteEndPoint
+                };
 
-                client.ID = Interlocked.Increment(ref _clientID);
-                client.Socket = clientSocket;
-                client.Stream = new SslStream(new NetworkStream(clientSocket));
-                client.EndPoint = (IPEndPoint)clientSocket.RemoteEndPoint;
 
                 Clients.Add(client.ID, client);
 
-                client.Stream.BeginAuthenticateAsServer(Certificate.BlazeHubServer, AuthenticateAsServerCallback, client.ID);
+                client.Stream.BeginAuthenticateAsServer(Certificate.BlazeHubServer, AuthenticateAsServerCallback,
+                    client.ID);
             }
             catch (Exception ex)
             {
@@ -71,7 +83,7 @@ namespace Blaze.Server
         {
             try
             {
-                var clientID = (long)ar.AsyncState;
+                var clientID = (long) ar.AsyncState;
                 var client = Clients[clientID];
 
                 client.Stream.EndAuthenticateAsServer(ar);
@@ -88,10 +100,10 @@ namespace Blaze.Server
         {
             try
             {
-                var clientID = (long)ar.AsyncState;
+                var clientID = (long) ar.AsyncState;
                 var client = Clients[clientID];
 
-                int length = client.Stream.EndRead(ar);
+                var length = client.Stream.EndRead(ar);
 
                 if (length == 0)
                 {
@@ -113,7 +125,7 @@ namespace Blaze.Server
         {
             try
             {
-                var clientID = (long)ar.AsyncState;
+                var clientID = (long) ar.AsyncState;
                 var client = Clients[clientID];
 
                 lock (Clients)
@@ -128,7 +140,10 @@ namespace Blaze.Server
                 {
                     client.Socket.Shutdown(SocketShutdown.Both);
                 }
-                catch { }
+                catch
+                {
+                    // ignored
+                }
 
                 client.Socket.Close();
 

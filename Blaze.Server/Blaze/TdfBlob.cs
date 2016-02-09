@@ -1,21 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// -----------------------------------------------------------
+// This program is private software, based on C# source code.
+// To sell or change credits of this software is forbidden,
+// except if someone approves it from the Blaze INC. team.
+// -----------------------------------------------------------
+// Copyrights (c) 2016 Blaze.Server INC. All rights reserved.
+// -----------------------------------------------------------
 
-namespace Blaze.Server
+namespace Blaze.Server.Blaze
 {
-    public class TdfBlob : Tdf
+    internal sealed class TdfBlob : Tdf
     {
-        public byte[] Data;
+        public readonly byte[] Data;
 
         public TdfBlob(string label, byte[] data)
         {
-            this.Label = label;
-            this.Type = TdfBaseType.Binary;
+            Label = label;
+            Type = TdfBaseType.Binary;
 
-            this.Data = data;
+            Data = data;
         }
     }
 }

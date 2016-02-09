@@ -1,20 +1,31 @@
-﻿using System;
+﻿// -----------------------------------------------------------
+// This program is private software, based on C# source code.
+// To sell or change credits of this software is forbidden,
+// except if someone approves it from the Blaze INC. team.
+// -----------------------------------------------------------
+// Copyrights (c) 2016 Blaze.Server INC. All rights reserved.
+// -----------------------------------------------------------
+
+#region
+
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Blaze.Server.Base;
+using Blaze.Server.Blaze;
+using Blaze.Server.Logging;
 
-namespace Blaze.Server
+#endregion
+
+namespace Blaze.Server.Commands.AuthenticationComponent
 {
-    class ListUserEntitlements2Command
+    internal static class ListUserEntitlements2Command
     {
         public static void HandleRequest(Request request)
         {
-            Log.Info(string.Format("Client {0} requested user entitlements", request.Client.ID));
+            Log.Info($"Client {request.Client.ID} requested user entitlements");
 
-            var etag = (TdfString)request.Data["ETAG"];
-            bool onlineAccess = (etag.Value == "ONLINE_ACCESS");
+            var etag = (TdfString) request.Data["ETAG"];
+            var onlineAccess = etag.Value == "ONLINE_ACCESS";
 
             if (!onlineAccess)
             {
@@ -262,7 +273,7 @@ namespace Blaze.Server
                     }
                 });
 
-                request.Reply(0, new List<Tdf> { nlst });
+                request.Reply(0, new List<Tdf> {nlst});
             }
             else
             {

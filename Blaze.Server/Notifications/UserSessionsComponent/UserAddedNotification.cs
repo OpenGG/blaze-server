@@ -1,12 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// -----------------------------------------------------------
+// This program is private software, based on C# source code.
+// To sell or change credits of this software is forbidden,
+// except if someone approves it from the Blaze INC. team.
+// -----------------------------------------------------------
+// Copyrights (c) 2016 Blaze.Server INC. All rights reserved.
+// -----------------------------------------------------------
 
-namespace Blaze.Server
+#region
+
+using System.Collections.Generic;
+using Blaze.Server.Base;
+using Blaze.Server.Blaze;
+
+#endregion
+
+namespace Blaze.Server.Notifications.UserSessionsComponent
 {
-    class UserAddedNotification
+    internal static class UserAddedNotification
     {
         public static void Notify(Client client, ulong userID, string userName)
         {
@@ -14,19 +24,19 @@ namespace Blaze.Server
             {
                 new TdfStruct("DATA", new List<Tdf>
                 {
-                    new TdfUnion("ADDR", NetworkAddressMember.Unset, new List<Tdf> { }),
+                    new TdfUnion("ADDR", NetworkAddressMember.Unset, new List<Tdf>()),
                     new TdfString("BPS", ""),
                     new TdfString("CTY", ""),
                     new TdfMap("DMAP", TdfBaseType.Integer, TdfBaseType.Integer, new Dictionary<object, object>
                     {
-                        { (ulong)0x70001, (ulong)55 },
-                        { (ulong)0x70002, (ulong)707 }
+                        {(ulong) 0x70001, (ulong) 55},
+                        {(ulong) 0x70002, (ulong) 707}
                     }),
                     new TdfInteger("HWFG", 0),
                     new TdfStruct("QDAT", new List<Tdf>
                     {
                         new TdfInteger("DBPS", 0),
-                        new TdfInteger("NATT", (ulong)NatType.Open),
+                        new TdfInteger("NATT", (ulong) NatType.Open),
                         new TdfInteger("UBPS", 0)
                     }),
                     new TdfInteger("UATT", 0)

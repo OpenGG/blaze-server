@@ -1,21 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// -----------------------------------------------------------
+// This program is private software, based on C# source code.
+// To sell or change credits of this software is forbidden,
+// except if someone approves it from the Blaze INC. team.
+// -----------------------------------------------------------
+// Copyrights (c) 2016 Blaze.Server INC. All rights reserved.
+// -----------------------------------------------------------
 
-namespace Blaze.Server
+namespace Blaze.Server.Blaze
 {
-    public class TdfMin : Tdf
+    internal abstract class TdfMin : Tdf
     {
-        public ushort Value;
+        public readonly ushort Value;
 
-        public TdfMin(string label, ushort value)
+        protected TdfMin(string label, ushort value)
         {
-            this.Label = label;
-            this.Type = TdfBaseType.Min;
+            Label = label;
+            Type = TdfBaseType.Min;
 
-            this.Value = value;
+            Value = value;
         }
     }
 }

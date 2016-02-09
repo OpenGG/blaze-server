@@ -1,18 +1,29 @@
-﻿using System;
+﻿// -----------------------------------------------------------
+// This program is private software, based on C# source code.
+// To sell or change credits of this software is forbidden,
+// except if someone approves it from the Blaze INC. team.
+// -----------------------------------------------------------
+// Copyrights (c) 2016 Blaze.Server INC. All rights reserved.
+// -----------------------------------------------------------
+
+#region
+
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Blaze.Server.Base;
+using Blaze.Server.Blaze;
+// ReSharper disable UnusedMember.Global
 
-namespace Blaze.Server
+#endregion
+
+namespace Blaze.Server.Notifications.UserSessionsComponent
 {
-    class UserSessionExtendedDataUpdateNotification
+    internal class UserSessionExtendedDataUpdateNotification
     {
         public static void Notify(Client client, bool ulst = false, bool joining = false)
         {
-            var pslm = new TdfList("PSLM", TdfBaseType.Integer, new ArrayList { });
-            pslm.List.AddRange(new ulong[] { 268374015, 268374015, 268374015, 268374015, 268374015 });
+            var pslm = new TdfList("PSLM", TdfBaseType.Integer, new ArrayList());
+            pslm.List.AddRange(new ulong[] {268374015, 268374015, 268374015, 268374015, 268374015});
 
             var data = new List<Tdf>
             {
@@ -43,9 +54,9 @@ namespace Blaze.Server
                 new TdfInteger("USID", client.User.ID)
             };
 
-            if (ulst == true)
+            if (ulst)
             {
-                ((TdfStruct)data[0]).Data.Add(new TdfList("ULST", TdfBaseType.TDF_TYPE_BLAZE_OBJECT_ID, new ArrayList
+                ((TdfStruct) data[0]).Data.Add(new TdfList("ULST", TdfBaseType.TDF_TYPE_BLAZE_OBJECT_ID, new ArrayList
                 {
                     new TdfVector3("0", 4, 1, client.GameID)
                 }));
@@ -53,7 +64,7 @@ namespace Blaze.Server
 
             if (joining)
             {
-                var game = GameManager.Games[client.GameID];
+                var game = GameManager.GameManager.Games[client.GameID];
                 var gameClient = BlazeServer.Clients[game.ClientID];
 
                 gameClient.Notify(Component.UserSessions, 1, 0, data);

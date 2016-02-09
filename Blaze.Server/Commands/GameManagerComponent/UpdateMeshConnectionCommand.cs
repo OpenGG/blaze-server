@@ -1,55 +1,75 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// -----------------------------------------------------------
+// This program is private software, based on C# source code.
+// To sell or change credits of this software is forbidden,
+// except if someone approves it from the Blaze INC. team.
+// -----------------------------------------------------------
+// Copyrights (c) 2016 Blaze.Server INC. All rights reserved.
+// -----------------------------------------------------------
 
-namespace Blaze.Server
+#region
+
+using System.Collections.Generic;
+using Blaze.Server.Base;
+using Blaze.Server.Blaze;
+using Blaze.Server.Logging;
+using Blaze.Server.Notifications.GameManagerComponent;
+// ReSharper disable SwitchStatementMissingSomeCases
+
+#endregion
+
+namespace Blaze.Server.Commands.GameManagerComponent
 {
-    class UpdateMeshConnectionCommand
+    internal static class UpdateMeshConnectionCommand
     {
         public static void HandleRequest(Request request)
         {
-            Log.Info(string.Format("Client {0} updating mesh connection", request.Client.ID));
+            Log.Info($"Client {request.Client.ID} updating mesh connection");
 
-            var gameID = (TdfInteger)request.Data["GID"];
+            var gameID = (TdfInteger) request.Data["GID"];
 
-            var targ = (TdfList)request.Data["TARG"];
-            var targData = (List<Tdf>)targ.List[0];
-            var playerID = (TdfInteger)targData[1];
-            var stat = (TdfInteger)targData[2];
+            var targ = (TdfList) request.Data["TARG"];
+            var targData = (List<Tdf>) targ.List[0];
+            var playerID = (TdfInteger) targData[1];
+            var stat = (TdfInteger) targData[2];
 
             request.Reply();
 
-            if (stat.Value == 2)
+            switch (stat.Value)
             {
-                if (request.Client.Type == ClientType.GameplayUser)
-                {
-                    GamePlayerStateChangeNotification.Notify(request.Client, gameID.Value, request.Client.User.ID);
-                    PlayerJoinCompletedNotification.Notify(request.Client, gameID.Value, request.Client.User.ID);
-                }
-                else if (request.Client.Type == ClientType.DedicatedServer)
-                {
-                    GamePlayerStateChangeNotification.Notify(request.Client, gameID.Value, playerID.Value);
-                    PlayerJoinCompletedNotification.Notify(request.Client, gameID.Value, playerID.Value);
-                }
-            }
-            else if (stat.Value == 0)
-            {
-                if (request.Client.Type == ClientType.GameplayUser)
-                {
-                    var game = GameManager.Games[gameID.Value];
-                    game.Slots.Remove(playerID.Value);
+                case 2:
+                    switch (request.Client.Type)
+                    {
+                        case ClientType.GameplayUser:
+                            GamePlayerStateChangeNotification.Notify(request.Client, gameID.Value, request.Client.User.ID);
+                            PlayerJoinCompletedNotification.Notify(request.Client, gameID.Value, request.Client.User.ID);
+                            break;
+                        case ClientType.DedicatedServer:
+                            GamePlayerStateChangeNotification.Notify(request.Client, gameID.Value, playerID.Value);
+                            PlayerJoinCompletedNotification.Notify(request.Client, gameID.Value, playerID.Value);
+                            break;
+                    }
+                    break;
+                case 0:
+                    switch (request.Client.Type)
+                    {
+                        case ClientType.GameplayUser:
+                        {
+                            var game = GameManager.GameManager.Games[gameID.Value];
+                            game.Slots.Remove(playerID.Value);
 
-                    PlayerRemovedNotification.Notify(request.Client, playerID.Value);
-                }
-                else if (request.Client.Type == ClientType.DedicatedServer)
-                {
-                    var game = GameManager.Games[gameID.Value];
-                    game.Slots.Remove(playerID.Value);
+                            PlayerRemovedNotification.Notify(request.Client, playerID.Value);
+                        }
+                            break;
+                        case ClientType.DedicatedServer:
+                        {
+                            var game = GameManager.GameManager.Games[gameID.Value];
+                            game.Slots.Remove(playerID.Value);
 
-                    PlayerRemovedNotification.Notify(request.Client, playerID.Value);
-                }
+                            PlayerRemovedNotification.Notify(request.Client, playerID.Value);
+                        }
+                            break;
+                    }
+                    break;
             }
         }
     }

@@ -1,19 +1,30 @@
-﻿using System;
+﻿// -----------------------------------------------------------
+// This program is private software, based on C# source code.
+// To sell or change credits of this software is forbidden,
+// except if someone approves it from the Blaze INC. team.
+// -----------------------------------------------------------
+// Copyrights (c) 2016 Blaze.Server INC. All rights reserved.
+// -----------------------------------------------------------
+
+#region
+
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Blaze.Server.Base;
+using Blaze.Server.Blaze;
+using Blaze.Server.Logging;
 
-namespace Blaze.Server
+#endregion
+
+namespace Blaze.Server.Commands.AuthenticationComponent
 {
-    class LoginCommand
+    internal static class LoginCommand
     {
         public static void HandleRequest(Request request)
         {
-            var email = (TdfString)request.Data["MAIL"];
+            var email = (TdfString) request.Data["MAIL"];
 
-            Log.Info(string.Format("Client {0} logging in with email {1}", request.Client.ID, email.Value));
+            Log.Info($"Client {request.Client.ID} logging in with email {email.Value}");
 
             var user = Configuration.Users.Find(u => u.Email == email.Value);
 
@@ -39,7 +50,7 @@ namespace Blaze.Server
                         new TdfInteger("PID", user.ID),
                         new TdfInteger("STAS", 2),
                         new TdfInteger("XREF", 0),
-                        new TdfInteger("XTYP", (ulong)ExternalRefType.Unknown)
+                        new TdfInteger("XTYP", (ulong) ExternalRefType.Unknown)
                     }
                 }),
                 new TdfString("PRIV", ""),
@@ -48,7 +59,7 @@ namespace Blaze.Server
                 new TdfString("THST", ""),
                 new TdfString("TSUI", ""),
                 new TdfString("TURI", ""),
-                new TdfInteger("UID", (ulong)request.Client.ID)
+                new TdfInteger("UID", (ulong) request.Client.ID)
             };
 
             request.Reply(0, data);

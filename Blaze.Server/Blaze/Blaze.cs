@@ -1,10 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// -----------------------------------------------------------
+// This program is private software, based on C# source code.
+// To sell or change credits of this software is forbidden,
+// except if someone approves it from the Blaze INC. team.
+// -----------------------------------------------------------
+// Copyrights (c) 2016 Blaze.Server INC. All rights reserved.
+// -----------------------------------------------------------
 
-namespace Blaze.Server
+// ReSharper disable UnusedMember.Global
+namespace Blaze.Server.Blaze
 {
     public enum Component
     {
@@ -19,7 +22,7 @@ namespace Blaze.Server
         UserSessions = 0x7802
     }
 
-    public enum MessageType
+    internal enum MessageType
     {
         Message,
         Reply,
@@ -27,7 +30,7 @@ namespace Blaze.Server
         ErrorReply
     }
 
-    public enum NetworkAddressMember
+    internal enum NetworkAddressMember
     {
         XboxClientAddress,
         XboxServerAddress,
@@ -37,20 +40,20 @@ namespace Blaze.Server
         Unset = 0x7F
     }
 
-    public enum UpnpStatus
+    internal enum UpnpStatus
     {
         Unknown,
         Found,
         Enabled
     }
 
-    public enum TelemetryOpt
+    internal enum TelemetryOpt
     {
         OptOut,
         OptIn
     }
 
-    public enum GameState
+    internal enum GameState
     {
         NewState,
         Initializing,
@@ -64,27 +67,27 @@ namespace Blaze.Server
         ReplaySetup
     }
 
-    public enum PlayerState
+    internal enum PlayerState
     {
         Disconnected,
         Connected = 2
     }
 
-    public enum PresenceMode
+    internal enum PresenceMode
     {
         None,
         Standard,
         Private
     }
 
-    public enum VoipTopology
+    internal enum VoipTopology
     {
         Disabled,
         DedicatedServer,
         PeerToPeer
     }
 
-    public enum GameNetworkTopology
+    internal enum GameNetworkTopology
     {
         ClientServerPeerHosted,
         ClientServerDedicated,
@@ -93,7 +96,7 @@ namespace Blaze.Server
         PeerToPeerDirtyCastFailover
     }
 
-    public enum PlayerRemovedReason
+    internal enum PlayerRemovedReason
     {
         PlayerJoinTimeout,
         PlayerConnLost,
@@ -110,7 +113,7 @@ namespace Blaze.Server
         HostEjected
     }
 
-    public enum ClientType
+    internal enum ClientType
     {
         GameplayUser,
         HttpUser,
@@ -119,7 +122,7 @@ namespace Blaze.Server
         Invalid
     }
 
-    public enum ExternalRefType : ushort
+    internal enum ExternalRefType : ushort
     {
         Unknown,
         Xbox,
@@ -129,9 +132,9 @@ namespace Blaze.Server
         LegacyProfileID,
         Twitter,
         Facebook
-    };
+    }
 
-    public enum NatType
+    internal enum NatType
     {
         Open,
         Moderate,

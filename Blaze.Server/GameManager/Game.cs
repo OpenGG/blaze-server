@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Blaze.Server.Blaze;
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
-namespace Blaze.Server
+namespace Blaze.Server.GameManager
 {
-    public class Game
+    internal sealed class Game
     {
         public ulong ID { get; set; }
 
@@ -47,7 +45,7 @@ namespace Blaze.Server
 
         public ulong ExternalPort { get; set; }
 
-        public List<ulong> Slots { get; set; }
+        public List<ulong> Slots { get; private set; }
 
         public Game()
         {

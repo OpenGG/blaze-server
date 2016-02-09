@@ -1,16 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// -----------------------------------------------------------
+// This program is private software, based on C# source code.
+// To sell or change credits of this software is forbidden,
+// except if someone approves it from the Blaze INC. team.
+// -----------------------------------------------------------
+// Copyrights (c) 2016 Blaze.Server INC. All rights reserved.
+// -----------------------------------------------------------
 
-namespace Blaze.Server
+#region
+
+using System.Collections.Generic;
+using Blaze.Server.Base;
+using Blaze.Server.Blaze;
+using Blaze.Server.Logging;
+using Blaze.Server.Notifications.UserSessionsComponent;
+
+#endregion
+
+namespace Blaze.Server.Commands.AuthenticationComponent
 {
-    class LoginPersonaCommand
+    internal static class LoginPersonaCommand
     {
         public static void HandleRequest(Request request)
         {
-            Log.Info(string.Format("Client {0} logging in to persona {1}", request.Client.ID, request.Client.User.Name));
+            Log.Info($"Client {request.Client.ID} logging in to persona {request.Client.User.Name}");
 
             var data = new List<Tdf>
             {
@@ -26,9 +38,9 @@ namespace Blaze.Server
                     new TdfInteger("PID", request.Client.User.ID),
                     new TdfInteger("STAS", 2),
                     new TdfInteger("XREF", 0),
-                    new TdfInteger("XTYP", (ulong)ExternalRefType.Unknown)
+                    new TdfInteger("XTYP", (ulong) ExternalRefType.Unknown)
                 }),
-                new TdfInteger("UID", (ulong)request.Client.ID)
+                new TdfInteger("UID", (ulong) request.Client.ID)
             };
 
             request.Reply(0, data);

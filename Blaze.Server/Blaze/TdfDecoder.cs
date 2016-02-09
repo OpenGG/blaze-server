@@ -1,17 +1,31 @@
-﻿using System;
+﻿// -----------------------------------------------------------
+// This program is private software, based on C# source code.
+// To sell or change credits of this software is forbidden,
+// except if someone approves it from the Blaze INC. team.
+// -----------------------------------------------------------
+// Copyrights (c) 2016 Blaze.Server INC. All rights reserved.
+// -----------------------------------------------------------
+
+#region
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using Blaze.Server.Base;
+using Blaze.Server.Logging;
 
-namespace Blaze.Server
+#endregion
+
+namespace Blaze.Server.Blaze
 {
-    public class TdfDecoder
+    internal sealed class TdfDecoder
     {
-        private byte[] _data;
-        private MemoryStream _stream;
-        private Dictionary<string, Tdf> _result;
+        private readonly byte[] _data;
+        private readonly Dictionary<string, Tdf> _result;
+        private readonly MemoryStream _stream;
 
         public TdfDecoder(byte[] data)
         {
@@ -21,32 +35,31 @@ namespace Blaze.Server
         }
 
         /// <summary>
-        /// Decodes a tag to a label.
+        ///     Decodes a tag to a label.
         /// </summary>
         private string ReadLabel()
         {
             // by Pedro Martins
-            string label = "";
-            uint tag = 0;
+            var label = "";
 
             // get tag bytes
-            byte[] tagBytes = new byte[3];
+            var tagBytes = new byte[3];
             _stream.Read(tagBytes, 0, 3);
 
             // resize tag byte array (add an empty byte)
             Array.Resize(ref tagBytes, 4);
 
             // read tag value (as uint32) from tag byte array
-            tag = BitConverter.ToUInt32(tagBytes, 0);
+            var tag = BitConverter.ToUInt32(tagBytes, 0);
 
             // convert to little endian
             tag = Utils.SwapBytes(tag) >> 8;
 
             // convert tag to label
-            label += Convert.ToChar((((tag >> 18) & 0x3F) & 0x1F) | 64);
-            label += Convert.ToChar((((tag >> 12) & 0x3F) & 0x1F) | 64);
-            label += Convert.ToChar((((tag >> 6) & 0x3F) & 0x1F) | 64);
-            label += Convert.ToChar(((tag & 0x3F) & 0x1F) | 64);
+            label += Convert.ToChar(((tag >> 18) & 0x3F & 0x1F) | 64);
+            label += Convert.ToChar(((tag >> 12) & 0x3F & 0x1F) | 64);
+            label += Convert.ToChar(((tag >> 6) & 0x3F & 0x1F) | 64);
+            label += Convert.ToChar((tag & 0x3F & 0x1F) | 64);
 
             // clean label
             label = Regex.Replace(label, "[^A-Z]+", "");
@@ -55,21 +68,21 @@ namespace Blaze.Server
         }
 
         /// <summary>
-        /// Decodes an encoded integer.
+        ///     Decodes an encoded integer.
         /// </summary>
         private ulong DecodeInteger()
         {
             // by Pedro Martins
-            ulong value = (ulong)_stream.ReadByte();
+            var value = (ulong) _stream.ReadByte();
 
             if (value >= 0x80)
             {
                 value &= 0x3F;
 
-                for (int i = 1; i < 8; i++)
+                for (var i = 1; i < 8; i++)
                 {
-                    int b = _stream.ReadByte();
-                    value |= (ulong)(b & 0x7F) << ((i * 7) - 1);
+                    var b = _stream.ReadByte();
+                    value |= (ulong) (b & 0x7F) << (i*7 - 1);
 
                     if (b < 0x80)
                     {
@@ -83,12 +96,12 @@ namespace Blaze.Server
 
         private string DecodeString()
         {
-            string value = "";
-            int length = (int)DecodeInteger() - 1;
+            var value = "";
+            var length = (int) DecodeInteger() - 1;
 
             if (length > 0)
             {
-                byte[] stringBytes = new byte[length];
+                var stringBytes = new byte[length];
                 _stream.Read(stringBytes, 0, length);
 
                 value = Encoding.ASCII.GetString(stringBytes);
@@ -141,7 +154,7 @@ namespace Blaze.Server
             }
             else
             {
-                for (int i = 0; i < listSize; i++)
+                for (var i = 0; i < listSize; i++)
                 {
                     switch (listType)
                     {
@@ -156,9 +169,6 @@ namespace Blaze.Server
                         case TdfBaseType.Struct:
                             list.Add(DecodeStruct());
                             break;
-
-                        default:
-                            break;
                     }
                 }
             }
@@ -168,26 +178,26 @@ namespace Blaze.Server
 
         private TdfInteger DecodeTdfInteger(string label)
         {
-            ulong value = DecodeInteger();
+            var value = DecodeInteger();
 
             return new TdfInteger(label, value);
         }
 
         private TdfString DecodeTdfString(string label)
         {
-            string value = DecodeString();
+            var value = DecodeString();
 
             return new TdfString(label, value);
         }
 
         private TdfBlob DecodeTdfBlob(string label)
         {
-            int length = (int)DecodeInteger();
-            byte[] data = new byte[length];
+            var length = (int) DecodeInteger();
+            var data = new byte[length];
 
-            for (int i = 0; i < length; i++)
+            for (var i = 0; i < length; i++)
             {
-                data[i] = (byte)_stream.ReadByte();
+                data[i] = (byte) _stream.ReadByte();
             }
 
             return new TdfBlob(label, data);
@@ -203,15 +213,15 @@ namespace Blaze.Server
         private TdfList DecodeTdfList(string label)
         {
             // read list type
-            byte listType = (byte)_stream.ReadByte();
+            var listType = (byte) _stream.ReadByte();
 
             // read list size
-            int listSize = _stream.ReadByte();
+            var listSize = _stream.ReadByte();
 
             // read list
-            ArrayList data = DecodeList((TdfBaseType)listType, listSize);
+            var data = DecodeList((TdfBaseType) listType, listSize);
 
-            TdfList list = new TdfList(label, (TdfBaseType)listType, data);
+            var list = new TdfList(label, (TdfBaseType) listType, data);
 
             return list;
         }
@@ -219,18 +229,18 @@ namespace Blaze.Server
         private TdfMap DecodeTdfMap(string label)
         {
             // read list types
-            var listType1 = (TdfBaseType)_stream.ReadByte();
-            var listType2 = (TdfBaseType)_stream.ReadByte();
+            var listType1 = (TdfBaseType) _stream.ReadByte();
+            var listType2 = (TdfBaseType) _stream.ReadByte();
 
             // read list size
-            int listSize = _stream.ReadByte();
+            var listSize = _stream.ReadByte();
 
             var map = new TdfMap(label, listType1, listType2, new Dictionary<object, object>());
 
             // read list
-            Func<TdfBaseType, Object> readListItem = (type) =>
+            Func<TdfBaseType, object> readListItem = type =>
             {
-                Object item = null;
+                object item = null;
 
                 switch (type)
                 {
@@ -247,21 +257,21 @@ namespace Blaze.Server
                         break;
 
                     default:
-                        Log.Warn(string.Format("Unknown list item type: {0}", type));
+                        Log.Warn($"Unknown list item type: {type}");
                         break;
                 }
 
                 return item;
             };
 
-            for (int i = 0; i < listSize; i++)
+            for (var i = 0; i < listSize; i++)
             {
-                Object key = readListItem(listType1);
-                Object value = readListItem(listType2);
+                var key = readListItem(listType1);
+                var value = readListItem(listType2);
 
                 if (key != null | value != null)
                 {
-                    map.Map.Add(key, value);
+                    if (key != null) map.Map.Add(key, value);
                 }
             }
 
@@ -270,9 +280,9 @@ namespace Blaze.Server
 
         private TdfUnion DecodeTdfUnion(string label)
         {
-            NetworkAddressMember activeMember = (NetworkAddressMember)_stream.ReadByte();
+            var activeMember = (NetworkAddressMember) _stream.ReadByte();
 
-            TdfUnion union = new TdfUnion(label, activeMember, new List<Tdf> { });
+            var union = new TdfUnion(label, activeMember, new List<Tdf>());
 
             // if active member is not set then there are no data members
             if (activeMember != NetworkAddressMember.Unset)
@@ -285,11 +295,11 @@ namespace Blaze.Server
 
         private TdfIntegerList DecodeTdfIntegerList(string label)
         {
-            var list = new TdfIntegerList(label, new List<ulong> { });
+            var list = new TdfIntegerList(label, new List<ulong>());
 
-            int listSize = _stream.ReadByte();
+            var listSize = _stream.ReadByte();
 
-            for (int i = 0; i < listSize; i++)
+            for (var i = 0; i < listSize; i++)
             {
                 list.list.Add(DecodeInteger());
             }
@@ -299,17 +309,17 @@ namespace Blaze.Server
 
         private TdfVector2 DecodeTdfVector2(string label)
         {
-            ulong value1 = DecodeInteger();
-            ulong value2 = DecodeInteger();
+            var value1 = DecodeInteger();
+            var value2 = DecodeInteger();
 
             return new TdfVector2(label, value1, value2);
         }
 
         private TdfVector3 DecodeTdfVector3(string label)
         {
-            ulong value1 = DecodeInteger();
-            ulong value2 = DecodeInteger();
-            ulong value3 = DecodeInteger();
+            var value1 = DecodeInteger();
+            var value2 = DecodeInteger();
+            var value3 = DecodeInteger();
 
             return new TdfVector3(label, value1, value2, value3);
         }
@@ -319,7 +329,7 @@ namespace Blaze.Server
             Tdf tdf = null;
 
             var label = ReadLabel();
-            var type = (TdfBaseType)_stream.ReadByte();
+            var type = (TdfBaseType) _stream.ReadByte();
 
             switch (type)
             {
@@ -364,7 +374,7 @@ namespace Blaze.Server
                     break;
 
                 default:
-                    Log.Warn(string.Format("Unknown Tdf type: {0}", type));
+                    Log.Warn($"Unknown Tdf type: {type}");
                     break;
             }
 
@@ -375,7 +385,7 @@ namespace Blaze.Server
         {
             while (_stream.Position != _stream.Length)
             {
-                Tdf tdf = ReadTdf();
+                var tdf = ReadTdf();
 
                 if (tdf != null)
                 {

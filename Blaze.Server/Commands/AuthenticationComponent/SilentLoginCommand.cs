@@ -1,16 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// -----------------------------------------------------------
+// This program is private software, based on C# source code.
+// To sell or change credits of this software is forbidden,
+// except if someone approves it from the Blaze INC. team.
+// -----------------------------------------------------------
+// Copyrights (c) 2016 Blaze.Server INC. All rights reserved.
+// -----------------------------------------------------------
 
-namespace Blaze.Server
+#region
+
+using System.Collections.Generic;
+using Blaze.Server.Base;
+using Blaze.Server.Blaze;
+using Blaze.Server.Notifications.UserSessionsComponent;
+
+#endregion
+
+namespace Blaze.Server.Commands.AuthenticationComponent
 {
-    class SilentLoginCommand
+    internal static class SilentLoginCommand
     {
         public static void HandleRequest(Request request)
         {
-            var personaID = (TdfInteger)request.Data["PID"];
+            var personaID = (TdfInteger) request.Data["PID"];
 
             var user = Configuration.Users.Find(u => u.ID == personaID.Value);
             request.Client.User = user;
@@ -36,9 +47,9 @@ namespace Blaze.Server
                         new TdfInteger("PID", request.Client.User.ID),
                         new TdfInteger("STAS", 0),
                         new TdfInteger("XREF", 0),
-                        new TdfInteger("XTYP", (ulong)ExternalRefType.Unknown)
+                        new TdfInteger("XTYP", (ulong) ExternalRefType.Unknown)
                     }),
-                    new TdfInteger("UID", (ulong)request.Client.ID)
+                    new TdfInteger("UID", (ulong) request.Client.ID)
                 }),
                 new TdfInteger("SPAM", 0),
                 new TdfString("THST", ""),

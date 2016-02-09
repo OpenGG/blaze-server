@@ -1,17 +1,27 @@
-﻿using System;
+﻿// -----------------------------------------------------------
+// This program is private software, based on C# source code.
+// To sell or change credits of this software is forbidden,
+// except if someone approves it from the Blaze INC. team.
+// -----------------------------------------------------------
+// Copyrights (c) 2016 Blaze.Server INC. All rights reserved.
+// -----------------------------------------------------------
+
+#region
+
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Blaze.Server.Base;
+using Blaze.Server.Blaze;
 
-namespace Blaze.Server
+#endregion
+
+namespace Blaze.Server.Notifications.GameManagerComponent
 {
-    class JoiningPlayerInitiateConnectionsNotification
+    internal static class JoiningPlayerInitiateConnectionsNotification
     {
         public static void Notify(Client client)
         {
-            var game = GameManager.Games[client.GameID];
+            var game = GameManager.GameManager.Games[client.GameID];
 
             var slotID = game.Slots.FindIndex(slot => slot == client.User.ID);
 
@@ -19,14 +29,14 @@ namespace Blaze.Server
             {
                 new TdfStruct("GAME", new List<Tdf>
                 {
-                    new TdfList("ADMN", TdfBaseType.Integer, new ArrayList { client.User.ID }),
+                    new TdfList("ADMN", TdfBaseType.Integer, new ArrayList {client.User.ID}),
                     new TdfMap("ATTR", TdfBaseType.String, TdfBaseType.String, game.Attributes),
                     new TdfList("CAP", TdfBaseType.Integer, game.Capacity),
-                    new TdfInteger("GID", (ulong)client.GameID),
+                    new TdfInteger("GID", client.GameID),
                     new TdfString("GNAM", game.Name),
                     new TdfInteger("GPVH", 666),
                     new TdfInteger("GSID", 1),
-                    new TdfInteger("GSTA", (ulong)game.State),
+                    new TdfInteger("GSTA", (ulong) game.State),
                     new TdfString("GTYP", "frostbite_multiplayer"),
                     new TdfList("HNET", TdfBaseType.Struct, new ArrayList
                     {
@@ -53,41 +63,41 @@ namespace Blaze.Server
                         new TdfInteger("NATT", 0),
                         new TdfInteger("UBPS", 0)
                     }),
-                    new TdfInteger("NRES", (ulong)game.NotResetable),
-                    new TdfInteger("NTOP", (ulong)game.NetworkTopology),
+                    new TdfInteger("NRES", game.NotResetable),
+                    new TdfInteger("NTOP", (ulong) game.NetworkTopology),
                     new TdfString("PGID", ""),
-                    new TdfBlob("PGSR", new byte[] { }),
+                    new TdfBlob("PGSR", new byte[] {}),
                     new TdfStruct("PHST", new List<Tdf>
                     {
                         new TdfInteger("HPID", client.User.ID),
                         new TdfInteger("HSLT", 1)
                     }),
-                    new TdfInteger("PRES", (ulong)game.PresenceMode),
+                    new TdfInteger("PRES", (ulong) game.PresenceMode),
                     new TdfString("PSAS", "ams"),
-                    new TdfInteger("QCAP", (ulong)game.QueueCapacity),
+                    new TdfInteger("QCAP", game.QueueCapacity),
                     new TdfInteger("SEED", 2291),
                     new TdfInteger("TCAP", 0),
                     new TdfStruct("THST", new List<Tdf>
                     {
-                        new TdfInteger("HPID", (ulong)client.GameID),
+                        new TdfInteger("HPID", client.GameID),
                         new TdfInteger("HSLT", 0)
                     }),
                     new TdfString("UUID", "714b05dc-93bc-49ac-961c-cb38b574f30a"),
-                    new TdfInteger("VOIP", (ulong)game.VoipTopology),
+                    new TdfInteger("VOIP", (ulong) game.VoipTopology),
                     new TdfString("VSTR", "67")
                 }),
                 new TdfList("PROS", TdfBaseType.Struct, new ArrayList
                 {
                     new List<Tdf>
                     {
-                        new TdfBlob("BLOB", new byte[] { }),
+                        new TdfBlob("BLOB", new byte[] {}),
                         new TdfInteger("EXID", 0),
                         new TdfInteger("GID", client.GameID),
                         new TdfInteger("LOC", client.Localization),
                         new TdfString("NAME", client.User.Name),
                         new TdfMap("PATT", TdfBaseType.String, TdfBaseType.String, new Dictionary<object, object>
                         {
-                            { "Premium", "False" }
+                            {"Premium", "False"}
                         }),
                         new TdfInteger("PID", client.User.ID),
                         new TdfUnion("PNET", NetworkAddressMember.IPPAirAddress, new List<Tdf>
@@ -106,7 +116,7 @@ namespace Blaze.Server
                                 })
                             })
                         }),
-                        new TdfInteger("SID", (ulong)slotID),
+                        new TdfInteger("SID", (ulong) slotID),
                         new TdfInteger("SLOT", 0),
                         new TdfInteger("STAT", 2),
                         new TdfInteger("TIDX", 65535),

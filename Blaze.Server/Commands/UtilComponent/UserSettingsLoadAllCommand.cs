@@ -1,27 +1,38 @@
-﻿using System;
+﻿// -----------------------------------------------------------
+// This program is private software, based on C# source code.
+// To sell or change credits of this software is forbidden,
+// except if someone approves it from the Blaze INC. team.
+// -----------------------------------------------------------
+// Copyrights (c) 2016 Blaze.Server INC. All rights reserved.
+// -----------------------------------------------------------
+
+#region
+
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Blaze.Server.Base;
+using Blaze.Server.Blaze;
+using Blaze.Server.Logging;
 
-namespace Blaze.Server
+#endregion
+
+namespace Blaze.Server.Commands.UtilComponent
 {
-    class UserSettingsLoadAllCommand
+    internal static class UserSettingsLoadAllCommand
     {
         public static void HandleRequest(Request request)
         {
-            Log.Info(string.Format("Client {0} loading all user settings for user {1}", request.Client.ID, request.Client.User.ID));
+            Log.Info($"Client {request.Client.ID} loading all user settings for user {request.Client.User.ID}");
 
-            if (File.Exists(string.Format(".\\data\\{0}\\user_settings", request.Client.User.ID)))
+            if (File.Exists($".\\data\\{request.Client.User.ID}\\user_settings"))
             {
-                var userSettings = File.ReadAllBytes(string.Format(".\\data\\{0}\\user_settings", request.Client.User.ID));
+                var userSettings = File.ReadAllBytes($".\\data\\{request.Client.User.ID}\\user_settings");
 
                 var data = new List<Tdf>
                 {
                     new TdfMap("SMAP", TdfBaseType.String, TdfBaseType.String, new Dictionary<object, object>
                     {
-                        { "cust", userSettings.ToString() }
+                        {"cust", userSettings.ToString()}
                     })
                 };
 

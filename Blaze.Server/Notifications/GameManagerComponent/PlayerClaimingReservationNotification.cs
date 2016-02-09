@@ -1,33 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Security;
-using System.Text;
-using System.Threading.Tasks;
+﻿// -----------------------------------------------------------
+// This program is private software, based on C# source code.
+// To sell or change credits of this software is forbidden,
+// except if someone approves it from the Blaze INC. team.
+// -----------------------------------------------------------
+// Copyrights (c) 2016 Blaze.Server INC. All rights reserved.
+// -----------------------------------------------------------
 
-namespace Blaze.Server
+#region
+
+using System.Collections.Generic;
+using Blaze.Server.Base;
+using Blaze.Server.Blaze;
+
+#endregion
+
+namespace Blaze.Server.Notifications.GameManagerComponent
 {
-    public class PlayerClaimingReservationNotification
+    public static class PlayerClaimingReservationNotification
     {
         public static void Notify(Client client)
         {
-            var game = GameManager.Games[client.GameID];
+            var game = GameManager.GameManager.Games[client.GameID];
             var gameClient = BlazeServer.Clients[game.ClientID];
 
             var slotID = game.Slots.FindIndex(slot => slot == client.User.ID);
 
             var data = new List<Tdf>
             {
-                new TdfInteger("GID", (ulong)client.GameID),
+                new TdfInteger("GID", client.GameID),
                 new TdfStruct("PDAT", new List<Tdf>
                 {
                     new TdfInteger("EXID", 0),
-                    new TdfInteger("GID", (ulong)client.GameID),
+                    new TdfInteger("GID", client.GameID),
                     new TdfInteger("LOC", client.Localization),
                     new TdfString("NAME", client.User.Name),
                     new TdfMap("PATT", TdfBaseType.String, TdfBaseType.String, new Dictionary<object, object>
                     {
-                        { "Premium", "False" }
+                        {"Premium", "False"}
                     }),
                     new TdfInteger("PID", client.User.ID),
                     new TdfUnion("PNET", NetworkAddressMember.IPPAirAddress, new List<Tdf>
@@ -46,7 +55,7 @@ namespace Blaze.Server
                             })
                         })
                     }),
-                    new TdfInteger("SID", (ulong)slotID),
+                    new TdfInteger("SID", (ulong) slotID),
                     new TdfInteger("SLOT", 0),
                     new TdfInteger("STAT", 2),
                     new TdfInteger("TIDX", 65535),

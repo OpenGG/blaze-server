@@ -1,21 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// -----------------------------------------------------------
+// This program is private software, based on C# source code.
+// To sell or change credits of this software is forbidden,
+// except if someone approves it from the Blaze INC. team.
+// -----------------------------------------------------------
+// Copyrights (c) 2016 Blaze.Server INC. All rights reserved.
+// -----------------------------------------------------------
 
-namespace Blaze.Server
+#region
+
+using Blaze.Server.Base;
+using Blaze.Server.Blaze;
+using Blaze.Server.Logging;
+using Blaze.Server.Notifications.GameManagerComponent;
+
+#endregion
+
+namespace Blaze.Server.Commands.GameManagerComponent
 {
-    class SetGameSettingsCommand
+    internal static class SetGameSettingsCommand
     {
         public static void HandleRequest(Request request)
         {
-            var gameID = (TdfInteger)request.Data["GID"];
-            var gameSettings = (TdfInteger)request.Data["GSET"];
+            var gameID = (TdfInteger) request.Data["GID"];
+            var gameSettings = (TdfInteger) request.Data["GSET"];
 
-            Log.Info(string.Format("Client {0} setting game settings to {1}", gameID.Value, gameSettings.Value));
+            Log.Info($"Client {gameID.Value} setting game settings to {gameSettings.Value}");
 
-            GameManager.Games[gameID.Value].Settings = gameSettings.Value;
+            GameManager.GameManager.Games[gameID.Value].Settings = gameSettings.Value;
 
             request.Reply();
 
