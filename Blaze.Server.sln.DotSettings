@@ -1,0 +1,8 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/CodeStyle/FileHeader/FileHeaderText/@EntryValue">-----------------------------------------------------------&#xD;
+This program is private software, based on C# source code.&#xD;
+To sell or change credits of this software is forbidden,&#xD;
+except if someone approves it from the Blaze INC. team.&#xD;
+-----------------------------------------------------------&#xD;
+Copyrights (c) 2016 Blaze.Server INC. All rights reserved.&#xD;
+-----------------------------------------------------------</s:String></wpf:ResourceDictionary>
